@@ -269,6 +269,7 @@ struct aspeed_hace_dev {
 
 struct aspeed_hace_alg {
 	struct aspeed_hace_dev		*hace_dev;
+	const char			*alg_base;
 	union {
 		struct skcipher_alg	skcipher;
 		struct ahash_alg	ahash;

@@ -851,8 +851,7 @@ static int aspeed_sham_setkey(struct crypto_ahash *tfm, const u8 *key,
 	return err;
 }
 
-static int aspeed_sham_cra_init_alg(struct crypto_tfm *tfm,
-				    const char *alg_base)
+static int aspeed_sham_cra_init(struct crypto_tfm *tfm)
 {
 	struct ahash_alg *alg = __crypto_ahash_alg(tfm->__crt_alg);
 	struct aspeed_sham_ctx *tctx = crypto_tfm_ctx(tfm);
@@ -866,16 +865,16 @@ static int aspeed_sham_cra_init_alg(struct crypto_tfm *tfm,
 	crypto_ahash_set_reqsize(__crypto_ahash_cast(tfm),
 				 sizeof(struct aspeed_sham_reqctx));
 
-	if (alg_base) {
+	if (ast_alg->alg_base) {
 		struct aspeed_sha_hmac_ctx *bctx = tctx->base;
 
 		tctx->flags |= SHA_FLAGS_HMAC;
-		bctx->shash = crypto_alloc_shash(alg_base, 0,
+		bctx->shash = crypto_alloc_shash(ast_alg->alg_base, 0,
 						 CRYPTO_ALG_NEED_FALLBACK);
 		if (IS_ERR(bctx->shash)) {
 			dev_warn(hace_dev->dev,
 				 "base driver '%s' could not be loaded.\n",
-				 alg_base);
+				 ast_alg->alg_base);
 			return PTR_ERR(bctx->shash);
 		}
 	}
@@ -885,46 +884,6 @@ static int aspeed_sham_cra_init_alg(struct crypto_tfm *tfm,
 	tctx->enginectx.op.unprepare_request = NULL;
 
 	return 0;
-}
-
-static int aspeed_sham_cra_init(struct crypto_tfm *tfm)
-{
-	return aspeed_sham_cra_init_alg(tfm, NULL);
-}
-
-static int aspeed_sham_cra_sha1_init(struct crypto_tfm *tfm)
-{
-	return aspeed_sham_cra_init_alg(tfm, "sha1");
-}
-
-static int aspeed_sham_cra_sha224_init(struct crypto_tfm *tfm)
-{
-	return aspeed_sham_cra_init_alg(tfm, "sha224");
-}
-
-static int aspeed_sham_cra_sha256_init(struct crypto_tfm *tfm)
-{
-	return aspeed_sham_cra_init_alg(tfm, "sha256");
-}
-
-static int aspeed_sham_cra_sha384_init(struct crypto_tfm *tfm)
-{
-	return aspeed_sham_cra_init_alg(tfm, "sha384");
-}
-
-static int aspeed_sham_cra_sha512_init(struct crypto_tfm *tfm)
-{
-	return aspeed_sham_cra_init_alg(tfm, "sha512");
-}
-
-static int aspeed_sham_cra_sha512_224_init(struct crypto_tfm *tfm)
-{
-	return aspeed_sham_cra_init_alg(tfm, "sha512_224");
-}
-
-static int aspeed_sham_cra_sha512_256_init(struct crypto_tfm *tfm)
-{
-	return aspeed_sham_cra_init_alg(tfm, "sha512_256");
 }
 
 static void aspeed_sham_cra_exit(struct crypto_tfm *tfm)
@@ -1048,6 +1007,7 @@ struct aspeed_hace_alg aspeed_ahash_algs[] = {
 		},
 	},
 	{
+		.alg_base = "sha1",
 		.alg.ahash = {
 			.init	= aspeed_sham_init,
 			.update	= aspeed_sham_update,
@@ -1072,13 +1032,14 @@ struct aspeed_hace_alg aspeed_ahash_algs[] = {
 								sizeof(struct aspeed_sha_hmac_ctx),
 					.cra_alignmask		= 0,
 					.cra_module		= THIS_MODULE,
-					.cra_init		= aspeed_sham_cra_sha1_init,
+					.cra_init		= aspeed_sham_cra_init,
 					.cra_exit		= aspeed_sham_cra_exit,
 				}
 			}
 		},
 	},
 	{
+		.alg_base = "sha224",
 		.alg.ahash = {
 			.init	= aspeed_sham_init,
 			.update	= aspeed_sham_update,
@@ -1103,13 +1064,14 @@ struct aspeed_hace_alg aspeed_ahash_algs[] = {
 								sizeof(struct aspeed_sha_hmac_ctx),
 					.cra_alignmask		= 0,
 					.cra_module		= THIS_MODULE,
-					.cra_init		= aspeed_sham_cra_sha224_init,
+					.cra_init		= aspeed_sham_cra_init,
 					.cra_exit		= aspeed_sham_cra_exit,
 				}
 			}
 		},
 	},
 	{
+		.alg_base = "sha256",
 		.alg.ahash = {
 			.init	= aspeed_sham_init,
 			.update	= aspeed_sham_update,
@@ -1134,7 +1096,7 @@ struct aspeed_hace_alg aspeed_ahash_algs[] = {
 								sizeof(struct aspeed_sha_hmac_ctx),
 					.cra_alignmask		= 0,
 					.cra_module		= THIS_MODULE,
-					.cra_init		= aspeed_sham_cra_sha256_init,
+					.cra_init		= aspeed_sham_cra_init,
 					.cra_exit		= aspeed_sham_cra_exit,
 				}
 			}
@@ -1260,6 +1222,7 @@ struct aspeed_hace_alg aspeed_ahash_algs_g6[] = {
 		},
 	},
 	{
+		.alg_base = "sha384",
 		.alg.ahash = {
 			.init	= aspeed_sham_init,
 			.update	= aspeed_sham_update,
@@ -1284,13 +1247,14 @@ struct aspeed_hace_alg aspeed_ahash_algs_g6[] = {
 								sizeof(struct aspeed_sha_hmac_ctx),
 					.cra_alignmask		= 0,
 					.cra_module		= THIS_MODULE,
-					.cra_init		= aspeed_sham_cra_sha384_init,
+					.cra_init		= aspeed_sham_cra_init,
 					.cra_exit		= aspeed_sham_cra_exit,
 				}
 			}
 		},
 	},
 	{
+		.alg_base = "sha512",
 		.alg.ahash = {
 			.init	= aspeed_sham_init,
 			.update	= aspeed_sham_update,
@@ -1315,13 +1279,14 @@ struct aspeed_hace_alg aspeed_ahash_algs_g6[] = {
 								sizeof(struct aspeed_sha_hmac_ctx),
 					.cra_alignmask		= 0,
 					.cra_module		= THIS_MODULE,
-					.cra_init		= aspeed_sham_cra_sha512_init,
+					.cra_init		= aspeed_sham_cra_init,
 					.cra_exit		= aspeed_sham_cra_exit,
 				}
 			}
 		},
 	},
 	{
+		.alg_base = "sha512_224",
 		.alg.ahash = {
 			.init	= aspeed_sha512s_init,
 			.update	= aspeed_sham_update,
@@ -1346,13 +1311,14 @@ struct aspeed_hace_alg aspeed_ahash_algs_g6[] = {
 								sizeof(struct aspeed_sha_hmac_ctx),
 					.cra_alignmask		= 0,
 					.cra_module		= THIS_MODULE,
-					.cra_init		= aspeed_sham_cra_sha512_224_init,
+					.cra_init		= aspeed_sham_cra_init,
 					.cra_exit		= aspeed_sham_cra_exit,
 				}
 			}
 		},
 	},
 	{
+		.alg_base = "sha512_224",
 		.alg.ahash = {
 			.init	= aspeed_sha512s_init,
 			.update	= aspeed_sham_update,
@@ -1377,7 +1343,7 @@ struct aspeed_hace_alg aspeed_ahash_algs_g6[] = {
 								sizeof(struct aspeed_sha_hmac_ctx),
 					.cra_alignmask		= 0,
 					.cra_module		= THIS_MODULE,
-					.cra_init		= aspeed_sham_cra_sha512_256_init,
+					.cra_init		= aspeed_sham_cra_init,
 					.cra_exit		= aspeed_sham_cra_exit,
 				}
 			}
