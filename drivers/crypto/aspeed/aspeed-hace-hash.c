@@ -5,7 +5,7 @@
 
 #include "aspeed-hace.h"
 
-#ifdef CONFIG_CRYPTO_DEV_ASPEED_HACE_HASH_DEBUG
+#ifdef CONFIG_CRYPTO_DEV_ASPEED_HACE_DEBUG
 #define AHASH_DBG(h, fmt, ...)	\
 	dev_info((h)->dev, "%s() " fmt, __func__, ##__VA_ARGS__)
 #else

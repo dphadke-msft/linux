@@ -5,7 +5,7 @@
 
 #include "aspeed-hace.h"
 
-#ifdef CONFIG_CRYPTO_DEV_ASPEED_HACE_CRYPTO_DEBUG
+#ifdef CONFIG_CRYPTO_DEV_ASPEED_HACE_DEBUG
 #define CIPHER_DBG(h, fmt, ...)	\
 	dev_info((h)->dev, "%s() " fmt, __func__, ##__VA_ARGS__)
 #else
@@ -1119,3 +1119,18 @@ void aspeed_register_hace_crypto_algs(struct aspeed_hace_dev *hace_dev)
 		}
 	}
 }
+
+void aspeed_unregister_hace_crypto_algs(struct aspeed_hace_dev *hace_dev)
+{
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(aspeed_crypto_algs); i++)
+		crypto_unregister_skcipher(&aspeed_crypto_algs[i].alg.skcipher);
+
+	if (hace_dev->version != AST2600_VERSION)
+		return;
+
+	for (i = 0; i < ARRAY_SIZE(aspeed_crypto_algs_g6); i++)
+		crypto_unregister_skcipher(&aspeed_crypto_algs_g6[i].alg.skcipher);
+}
+

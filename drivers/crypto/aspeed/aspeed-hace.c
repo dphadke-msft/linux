@@ -13,35 +13,13 @@
 
 #include "aspeed-hace.h"
 
-#ifdef ASPEED_HACE_DEBUG
+#ifdef CONFIG_CRYPTO_DEV_ASPEED_HACE_DEBUG
 #define HACE_DBG(d, fmt, ...)	\
 	dev_info((d)->dev, "%s() " fmt, __func__, ##__VA_ARGS__)
 #else
 #define HACE_DBG(d, fmt, ...)	\
 	dev_dbg((d)->dev, "%s() " fmt, __func__, ##__VA_ARGS__)
 #endif
-
-/* Weak function for HACE hash */
-void __weak aspeed_register_hace_hash_algs(struct aspeed_hace_dev *hace_dev)
-{
-	dev_warn(hace_dev->dev, "%s: Not supported yet\n", __func__);
-}
-
-void __weak aspeed_unregister_hace_hash_algs(struct aspeed_hace_dev *hace_dev)
-{
-	dev_warn(hace_dev->dev, "%s: Not supported yet\n", __func__);
-}
-
-/* Weak function for HACE crypto */
-void __weak aspeed_register_hace_crypto_algs(struct aspeed_hace_dev *hace_dev)
-{
-	dev_warn(hace_dev->dev, "%s: Not supported yet\n", __func__);
-}
-
-void __weak aspeed_unregister_hace_crypto_algs(struct aspeed_hace_dev *hace_dev)
-{
-	dev_warn(hace_dev->dev, "%s: Not supported yet\n", __func__);
-}
 
 /* HACE interrupt service routine */
 static irqreturn_t aspeed_hace_irq(int irq, void *dev)
