@@ -30,3 +30,29 @@ config CRYPTO_DEV_ASPEED_HACE_HASH_DEBUG
 	  to ask for those messages.
 	  Avoid enabling this option for production build to
 	  minimize driver timing.
+
+config CRYPTO_DEV_ASPEED_HACE_CRYPTO
+	bool "Enable Aspeed Hash & Crypto Engine (HACE) crypto"
+	depends on CRYPTO_DEV_ASPEED
+	select CRYPTO_ENGINE
+	select CRYPTO_AES
+	select CRYPTO_DES
+	select CRYPTO_ECB
+	select CRYPTO_CBC
+	select CRYPTO_CFB
+	select CRYPTO_OFB
+	select CRYPTO_CTR
+	help
+	  Select here to enable Aspeed Hash & Crypto Engine (HACE)
+	  crypto driver.
+	  Supports AES/DES symmetric-key encryption and decryption
+	  with ECB/CBC/CFB/OFB/CTR options.
+
+config CRYPTO_DEV_ASPEED_HACE_CRYPTO_DEBUG
+	bool "Enable HACE crypto debug messages"
+	depends on CRYPTO_DEV_ASPEED_HACE_CRYPTO
+	help
+	  Print HACE crypto debugging messages if you use this option
+	  to ask for those messages.
+	  Avoid enabling this option for production build to
+	  minimize driver timing.
